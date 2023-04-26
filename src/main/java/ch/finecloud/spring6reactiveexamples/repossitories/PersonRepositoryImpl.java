@@ -4,6 +4,8 @@ import ch.finecloud.spring6reactiveexamples.domain.Person;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.Objects;
+
 public class PersonRepositoryImpl implements PersonRepository {
 
     Person person1 = Person.builder()
@@ -28,8 +30,8 @@ public class PersonRepositoryImpl implements PersonRepository {
             .build();
 
     @Override
-    public Mono<Person> getById(Integer id) {
-        return Mono.just(person1);
+    public Mono<Person> getById(final Integer id) {
+        return findAll().filter(person -> Objects.equals(person.getId(), id)).next();
     }
 
     @Override
