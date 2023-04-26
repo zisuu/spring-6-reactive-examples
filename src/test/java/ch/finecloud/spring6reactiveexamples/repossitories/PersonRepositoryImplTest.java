@@ -71,4 +71,21 @@ class PersonRepositoryImplTest {
             });
         });
     }
+
+    @Test
+    void testFilterOnName() {
+        Flux<Person> personFlux = personRepository.findAll();
+        personFlux.filter(person -> person.getFirstName().equals("John"))
+                .subscribe(person -> {
+                    System.out.println(person.toString());
+                });
+    }
+
+    @Test
+    void testGetById() {
+        Mono<Person> personMono = personRepository.findAll()
+                .filter(person -> person.getFirstName().equals("John"))
+                .next();
+        personMono.subscribe(person -> System.out.println(person.getFirstName()));
+    }
 }
