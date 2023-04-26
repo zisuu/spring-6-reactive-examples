@@ -4,6 +4,7 @@ import ch.finecloud.spring6reactiveexamples.domain.Person;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import java.util.List;
 
@@ -15,22 +16,36 @@ class PersonRepositoryImplTest {
 
     @Test
     void testGetByIdFound() {
-        Mono<Person> personMono = personRepository.getById(1)
-                .doOnError(throwable -> {
-                    System.out.println("Error occurred in flux");
-                    System.out.println(throwable.toString());
-                });
+        Mono<Person> personMono = personRepository.getById(1);
         assertEquals(Boolean.TRUE, personMono.hasElement().block());
     }
 
     @Test
+    void testGetByIdFoundStepVerifier() {
+        Mono<Person> personMono = personRepository.getById(1);
+        StepVerifier.create(personMono)
+                .expectNextCount(1)
+                .verifyComplete();
+        personMono.subscribe(person -> {
+            System.out.println(person.getFirstName());
+        });
+    }
+
+    @Test
     void testGetByIdNotFound() {
-        Mono<Person> personMono = personRepository.getById(-1)
-                .doOnError(throwable -> {
-                    System.out.println("Error occurred in flux");
-                    System.out.println(throwable.toString());
-                });
+        Mono<Person> personMono = personRepository.getById(-1);
         assertEquals(Boolean.FALSE, personMono.hasElement().block());
+    }
+
+    @Test
+    void testGetByIdNotFoundStepVerifier() {
+        Mono<Person> personMono = personRepository.getById(-1);
+        StepVerifier.create(personMono)
+                .expectNextCount(0)
+                .verifyComplete();
+        personMono.subscribe(person -> {
+            System.out.println(person.getFirstName());
+        });
     }
 
     // this is not preferred
